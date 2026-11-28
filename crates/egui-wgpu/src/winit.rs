@@ -569,10 +569,18 @@ impl Painter {
                     self.render_state.as_ref(),
                     state.surface.as_hal::<wgpu::hal::api::Metal>(),
                 ) {
-                    hal_surface
-                        .render_layer()
-                        .lock()
-                        .setPresentsWithTransaction(resizing);
+                    let layer = hal_surface.render_layer().lock();
+                    layer.setPresentsWithTransaction(resizing);
+                    // Anchor a frame of the old size to the window's top left instead of
+                    // stretching it to the new bounds (the default), which wobbles during live
+                    // resize. "Top" is in the layer's own space, flipped in an AppKit view.
+                    // SAFETY: the gravity constants are immutable `NSString` statics of QuartzCore.
+                    layer.setContentsGravity(if layer.contentsAreFlipped() {
+                        objc2_quartz_core::kCAGravityBottomLeft
+                    } else {
+                        objc2_quartz_core::kCAGravityTopLeft
+                    });
+                    drop(layer);
 
                     Self::configure_surface(state, render_state, &self.config.surface);
                 }

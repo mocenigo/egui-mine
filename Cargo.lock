@@ -1339,6 +1339,7 @@ dependencies = [
  "egui",
  "epaint",
  "log",
+ "objc2-quartz-core 0.3.2",
  "profiling",
  "thiserror 2.0.20",
  "type-map",

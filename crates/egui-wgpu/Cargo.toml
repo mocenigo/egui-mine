@@ -54,7 +54,7 @@ fragile-send-sync-non-atomic-wasm = ["wgpu/fragile-send-sync-non-atomic-wasm"]
 ## Enables the macOS live-resize jitter fix, which uses `present_with_transaction`.
 ## This requires the `wgpu/metal` backend. Disable this feature if you want to use egui-wgpu
 ## with a different backend (e.g. Vulkan or GL) on macOS without pulling in Metal.
-macos-window-resize-jitter-fix = ["wgpu/metal"]
+macos-window-resize-jitter-fix = ["wgpu/metal", "dep:objc2-quartz-core"]
 
 [dependencies]
 epaint = { workspace = true, default-features = false, features = ["bytemuck"] }
@@ -73,3 +73,6 @@ wgpu = { workspace = true, features = ["wgsl"] }
 
 egui = { workspace = true, optional = true, default-features = false }
 winit = { workspace = true, optional = true, default-features = false }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2-quartz-core = { workspace = true, optional = true, features = ["std", "CALayer", "CAMetalLayer"] }
